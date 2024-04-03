@@ -1,43 +1,100 @@
 #!/bin/bash
-
-# milkv sd image generator
-
+# a sd image generator for sophpi
 # usage
-if [ "$#" -ne "1" ]; then
-  echo "usage: ${0} OUTPUT_DIR"
-  echo ""
-  echo "       The script is used to create a sdcard image with two partitions, "
-  echo "       one is fat32 with 128MB, the other is ext4 with 256MB."
-  echo "       You can modify the capacities in genimage cfg as you wish!"
-  echo "       genimage cfg: genimage.cfg"
-  echo ""
-  echo "Note:  Please backup you sdcard files before using this image!"
+if [ "$#" -ne "1" ]
+then
+	echo "usage: sudo ./sd_gen_burn_image.sh OUTPUT_DIR"
+	echo ""
+	echo "       The script is used to create a sdcard image with two partitions, "
+	echo "       one is fat32 with 128MB, the other is ext4 with 256MB."
+	echo "       You can modify the capacities in this script as you wish!"
+	echo ""
+	echo "Note:  Please backup you sdcard files before using this image!"
 
-  exit
+	exit
 fi
 
-echo "BR_DIR: $BR_DIR"
-echo "BR_BOARD: $BR_BOARD"
-
-# 获取脚本的完整路径  
-script_full_path=$(readlink -f "$0")  
-
-# 获取脚本所在的目录  
-script_dir=$(dirname "$script_full_path")  
-
-export PATH=${script_dir}:${PATH}
+vfat_cap=128M
+vfat_label="boot"
+ext4_cap=256M
+ext4_label="rootfs"
+ext4_cap2=256M
+ext4_label2="rootfs2"
+data_cap=256M
+data_label="data"
 
 output_dir=$1
 echo ${output_dir}
 pushd ${output_dir}
 
-[ -d tmp ] && rm -rf tmp
+# gen a empty image
+image=sophpi-seeed-`date +%Y%m%d-%H%M`.img
+echo ${image}
+dd if=/dev/zero of=./${image} bs=1M count=1024
 
-genimage --config ${script_dir}/genimage.cfg --rootpath rootfs/ --inputpath ${PWD} --outputpath ${PWD}
-if [ $? -eq 0 ]; then
-    echo "gnimage for sophpi-seeed success!"
-else
-    echo "gnimage for sophpi-seeed failed!"
-fi
+################################
+# Note: do not change this flow
+################################
+sudo fdisk ./${image} << EOF
+n
+p
+1
+
++${vfat_cap}
+n
+p
+2
+
++${ext4_cap}
+n
+p
+3
+
++${ext4_cap2}
+n
+p
+
+
+w
+EOF
+# Note end
+################################
+
+dev_name=`sudo losetup -f`
+echo ${dev_name}
+echo ""
+
+sudo losetup ${dev_name} ./${image}
+sudo partprobe ${dev_name}
+
+sudo mkfs.vfat -F 32 -n ${vfat_label} ${dev_name}p1
+sudo mkfs.ext4 -L ${ext4_label} ${dev_name}p2
+sudo mkfs.ext4 -L ${ext4_label2} ${dev_name}p3
+sudo mkfs.ext4 -L ${data_label} ${dev_name}p4
+
+# mount partitions
+rm ./tmp1 -rf
+mkdir tmp1
+sudo mount -t vfat ${dev_name}p1 tmp1/
+# sudo mount -t ext4 ${dev_name}p2 tmp2/
+
+# copy boot file and rootfs
+sudo cp ${output_dir}/fip.bin ./tmp1/
+sudo cp ${output_dir}/rawimages/boot.sd ./tmp1/
+# sudo cp -raf ${output_dir}/rootfs/* ./tmp2
+sudo dd if=${output_dir}/rawimages/rootfs_ext4.sd of=${dev_name}p2
+
+sync
+
+# umount
+sudo umount tmp1
+sudo losetup -d ${dev_name}
+rmdir tmp1
+
+# tar image
+tar zcvf ${image}.tar.gz ${image}
+
+echo "Gen image successful: ${image}"
+echo ""
 
 popd
