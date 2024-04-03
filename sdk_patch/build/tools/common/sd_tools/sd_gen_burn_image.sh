@@ -19,8 +19,13 @@ fi
 echo "BR_DIR: $BR_DIR"
 echo "BR_BOARD: $BR_BOARD"
 
-# genimage command path
-export PATH=${TOP_DIR}/build/tools/common/sd_tools:${PATH}
+# 获取脚本的完整路径  
+script_full_path=$(readlink -f "$0")  
+
+# 获取脚本所在的目录  
+script_dir=$(dirname "$script_full_path")  
+
+export PATH=${script_dir}:${PATH}
 
 output_dir=$1
 echo ${output_dir}
@@ -28,7 +33,7 @@ pushd ${output_dir}
 
 [ -d tmp ] && rm -rf tmp
 
-genimage --config ${TOP_DIR}/build/tools/common/sd_tools/genimage.cfg --rootpath rootfs/ --inputpath ${PWD} --outputpath ${PWD}
+genimage --config ${script_dir}/genimage.cfg --rootpath rootfs/ --inputpath ${PWD} --outputpath ${PWD}
 if [ $? -eq 0 ]; then
     echo "gnimage for sophpi-seeed success!"
 else
