@@ -55,7 +55,6 @@ NODEJS_PRE_CONFIGURE_HOOKS += NODEJS_PYTHON3_SYMLINK
 
 ifeq ($(BR2_PACKAGE_OPENSSL),y)
 NODEJS_DEPENDENCIES += openssl
-NODEJS_CONF_OPTS += --shared-openssl
 else
 NODEJS_CONF_OPTS += --without-ssl
 endif
