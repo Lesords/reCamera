@@ -30,6 +30,8 @@ rsync_dir $EXTERNAL/build .
 rsync_dir $EXTERNAL/fsbl .
 rsync_dir $EXTERNAL/rootfs_overlay/ buildroot-2021.05/board/cvitek/CV181X/overlay/
 
+cp -rvf $EXTERNAL/ramdisk/ $PROJECT_OUT/
+
 patches=`find $EXTERNAL/patches/ -name "*.patch" | sort`
 for patch in ${patches}; do
     echo "patch -p1 -s -f -N -d \"${PROJECT_OUT}/buildroot-2021.05/\" < ${patch}" ; \
