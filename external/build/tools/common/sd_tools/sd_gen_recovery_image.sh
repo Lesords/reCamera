@@ -40,7 +40,7 @@ function size2sectors() {
 }
 
 part_label="RECOVERY"
-part_cap=256M
+part_cap=1024M
 part_start=2048
 part_size=$(size2sectors ${part_cap})
 
