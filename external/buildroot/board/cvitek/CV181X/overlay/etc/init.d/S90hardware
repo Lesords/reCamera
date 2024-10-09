@@ -13,8 +13,8 @@ case "$1" in
                 sh $SYSTEMPATH/ko/loadsystemko.sh
         fi
 
-        if [ -f $SYSTEMPATH/usb-net.sh ]; then
-                . $SYSTEMPATH/usb-net.sh &
+        if [ -f $SYSTEMPATH/usb-rndis.sh ]; then
+                . $SYSTEMPATH/usb-rndis.sh &
         fi
         ;;
 
