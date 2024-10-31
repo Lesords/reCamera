@@ -1,3 +1,9 @@
+## 0.1.2 (2024-10-30)
+
+### sg2002_recamera_emmc
+
+- Just for Test
+
 ## 0.1.1 (2024-10-30)
 
 ### sg2002_recamera_emmc
