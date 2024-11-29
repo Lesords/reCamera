@@ -1,0 +1,28 @@
+#!/bin/sh
+
+FILE=/etc/init.d/S03node-red
+LINE=$(awk '/su \$DAEMON_USER -c .*mkdir.*/ { print NR }' $FILE)
+LINE=$(($LINE - 1))
+
+case $1 in
+    on)
+        result=$(awk '/^    DAEMON_USER=root$/ { print NR }' $FILE | grep $LINE)
+
+        if [ "$result" ]; then
+            echo "it's already on"
+        else
+            echo "switch to root mode"
+            sed -i "${LINE}a\    DAEMON_USER=root" $FILE
+        fi
+        ;;
+    off)
+        result=$(awk '/^    DAEMON_USER=root$/ { print NR }' $FILE | grep $LINE)
+
+        if [ "$result" ]; then
+            echo "switch to normal mode"
+            sed -i "${LINE}d" $FILE
+        else
+            echo "it's already off"
+        fi
+        ;;
+esac

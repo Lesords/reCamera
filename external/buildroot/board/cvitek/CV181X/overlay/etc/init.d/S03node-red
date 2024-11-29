@@ -59,6 +59,7 @@ start() {
         echo "Running as user: $DAEMON_USER"
     fi
    
+    DAEMON_USER=root
     su $DAEMON_USER -c "mkdir -p $VARDIR"
     su $DAEMON_USER -c "start-stop-daemon -S -q -m -b -p $PIDFILE --exec $DAEMON -- $DAEMON_OPTS"
 
