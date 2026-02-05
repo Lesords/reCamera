@@ -1,3 +1,10 @@
+## 0.2.3 (2026-02-05)
+
+### sg2002_recamera_emmc
+
+- New Features:
+    - Support wifi halow
+
 ## 0.2.2 (2026-01-06)
 
 ### sg2002_recamera_emmc
