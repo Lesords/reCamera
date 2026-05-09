@@ -9,7 +9,7 @@ NODE_SERVER_SITE = https://github.com/Lesords/LuaScriptVision.git
 NODE_SERVER_SITE_METHOD = git
 NODE_SERVER_GIT_SUBMODULES = YES
 NODE_SERVER_LICENSE = Apache-2.0
-NODE_SERVER_DEPENDENCIES = mosquitto alsa-lib
+NODE_SERVER_DEPENDENCIES = host-nodejs mosquitto alsa-lib
 
 # Configure step: run CMake with SG200X toolchain
 define NODE_SERVER_CONFIGURE_CMDS
@@ -41,6 +41,10 @@ define NODE_SERVER_INSTALL_TARGET_CMDS
 
 	$(NPM) install --no-audit --no-update-notifier --no-fund --save --save-prefix=~ --production --engine-strict --prefix $(TARGET_DIR)/home/recamera/.node-red @flowfuse/node-red-dashboard@1.26.0
 	$(NPM) install --no-audit --no-update-notifier --no-fund --save --save-prefix=~ --production --engine-strict --prefix $(TARGET_DIR)/home/recamera/.node-red socketcan@4.0.5
+
+	# Overlay updated node-red-contrib-sscma from git
+	git clone --depth 1 -b main https://github.com/Lesords/node-red-contrib-nodes.git $(@D)/_contrib_overlay && \
+	cp -rf $(@D)/_contrib_overlay/node-red-contrib-sscma/* $(TARGET_DIR)/home/recamera/.node-red/node_modules/node-red-contrib-sscma/
 
 	# Install binaries
 	$(INSTALL) -D -m 0755 $(@D)/build/node_server $(TARGET_DIR)/usr/local/bin/node_server
