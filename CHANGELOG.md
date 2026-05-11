@@ -1,3 +1,10 @@
+## model-optimize-V1 (2026-05-11)
+
+### sg2002_recamera_emmc
+
+- New Features:
+    - Support Multi Model
+
 ## 0.2.4 (2026-03-17)
 
 ### sg2002_recamera_emmc
