@@ -17,6 +17,7 @@ define NODE_SERVER_CONFIGURE_CMDS
 	cd $(@D)/build && \
 	$(BR2_CMAKE) \
 		-DCMAKE_TOOLCHAIN_FILE=$(@D)/cmake/toolchain-sg200x.cmake \
+		-DCMAKE_SYSROOT=$(STAGING_DIR) \
 		-DSG200X_SDK_PATH=$(shell realpath $(BUILD_DIR)/../../../../) \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DENABLE_CVI_CAMERA=ON \
